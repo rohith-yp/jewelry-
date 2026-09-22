@@ -150,6 +150,7 @@ function Value({ icon, title, children }: { icon: ReactNode; title: string; chil
 
 const productNames = ["Royal Nizam Polki Necklace", "Traditional Kundan Kada", "Diamond Solitaire Ring", "Bridal Heirloom Set", "Polki Necklace Set", "Contemporary Gold Chain", "Polki Earring Drops", "Ruby Kundan Bangles"];
 const prices = ["₹4,65,000", "₹2,32,000", "₹2,80,000", "₹8,65,000", "₹5,25,000", "₹72,000", "₹18,000", "₹2,95,000"];
+const occasionCopy = ["For Your Special Day", "Celebrate in Style", "Elegance for Everyday", "For Your Loved Ones"] as const;
 
 function ProductCard({ name, index }: { name: string; index: number }) {
   const [liked, setLiked] = useState(false);
@@ -166,7 +167,7 @@ export function CollectionsPage() {
       <aside className="filters"><h2>Filters <Menu /></h2><FilterGroup title="Category" items={["All", "Necklaces", "Earrings", "Bangles", "Rings", "Chains", "Sets"]} /><div className="filter-group"><strong>Price range</strong><input type="range" min="10000" max="500000" defaultValue="180000" /><div className="range-labels"><span>₹10,000</span><span>₹5,00,000</span></div></div><FilterGroup title="Gold purity" items={["All", "22K Gold", "18K Gold"]} square /><FilterGroup title="Occasion" items={["All", "Wedding", "Festival", "Party", "Everyday", "Gift"]} square /><button className="reset-button">Reset filters</button></aside>
       <div className="products-main"><div className="product-toolbar"><span>Showing 1–12 of 48 results</span><label>Sort by: <select value={sort} onChange={(e) => setSort(e.target.value)}><option>Newest First</option><option>Price: Low to High</option><option>Price: High to Low</option></select></label></div><div className="product-grid">{productNames.map((name, index) => <ProductCard key={name} name={name} index={index} />)}</div><div className="promise-strip"><Value icon={<Gem />} title="Handcrafted">By skilled artisans</Value><Value icon={<ShieldCheck />} title="100% Hallmarked">22K BIS Certified Gold</Value><Value icon={<ShoppingBag />} title="Free insured shipping">Safe & secure delivery</Value><Value icon={<Heart />} title="Lifetime exchange">Buy with confidence</Value></div></div>
     </section>
-    <section className="site-shell occasions"><h2>Shop by Occasion</h2><div className="occasion-row">{["Wedding", "Festive", "Daily Wear", "Gifts"].map((name, i) => <CollectionCard key={name} item={{ name, copy: ["For Your Special Day", "Celebrate in Style", "Elegance for Everyday", "For Your Loved Ones"][i], crop: `${60 + i * 8}% ${46 + i * 8}%` }} />)}</div><div className="pagination"><button className="active">1</button><button>2</button><button>3</button><button>4</button><span>…</span><button><ArrowRight /></button></div></section>
+    <section className="site-shell occasions"><h2>Shop by Occasion</h2><div className="occasion-row">{occasionCopy.map((copy, i) => <CollectionCard key={copy} item={{ name: ["Wedding", "Festive", "Daily Wear", "Gifts"][i] ?? "Occasion", copy, crop: `${60 + i * 8}% ${46 + i * 8}%` }} />)}</div><div className="pagination"><button className="active">1</button><button>2</button><button>3</button><button>4</button><span>…</span><button><ArrowRight /></button></div></section>
   </main>;
 }
 
