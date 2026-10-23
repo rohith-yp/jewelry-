@@ -1353,10 +1353,24 @@ export function CollectionsPage() {
   const [activeProduct, setActiveProduct] = useState<Product | null>(null);
   const [toastMessage, setToastMessage] = useState<string | null>(null);
 
-  // Stack card selection state (default to null - ONLY the cards are seen initially!)
-  const [selectedStackId, setSelectedStackId] = useState<string | null>(null);
-  const [activeStackIndex, setActiveStackIndex] = useState(0);
+  // Stack card selection state (default to Suite 03 'necklaces' to mirror royal showroom centerpiece)
+  const [selectedStackId, setSelectedStackId] = useState<string | null>("necklaces");
+  const [activeStackIndex, setActiveStackIndex] = useState(2);
   const curatedRowRef = useRef<HTMLDivElement>(null);
+  const spreadStageRef = useRef<HTMLDivElement>(null);
+
+  // Smoothly center the selected fanned card within the scrollable container on mobile
+  useEffect(() => {
+    if (spreadStageRef.current && selectedStackId) {
+      const stage = spreadStageRef.current;
+      const selectedCardEl = stage.querySelector<HTMLElement>(".pile-spread-card.is-selected-card");
+      if (selectedCardEl) {
+        const cardCenter = selectedCardEl.offsetLeft + selectedCardEl.offsetWidth / 2;
+        const scrollTarget = cardCenter - stage.offsetWidth / 2;
+        stage.scrollTo({ left: Math.max(0, scrollTarget), behavior: "smooth" });
+      }
+    }
+  }, [selectedStackId]);
 
   const stackCards = [
     {
@@ -1554,7 +1568,7 @@ export function CollectionsPage() {
 
           <div className="pile-showcase-container">
             {/* The Physical Spread of Cards Stage */}
-            <div className="pile-spread-stage">
+            <div className="pile-spread-stage" ref={spreadStageRef}>
               {stackCards.map((card, idx) => {
                 const isSelected = selectedStackId === card.id;
 
@@ -1572,9 +1586,6 @@ export function CollectionsPage() {
                         setSelectedType(card.typeFilter);
                         setSelectedPurity("All");
                         setSelectedOccasion("All");
-                        setTimeout(() => {
-                          document.getElementById("stack-curated-showcase")?.scrollIntoView({ behavior: "smooth", block: "start" });
-                        }, 120);
                       }
                     }}
                     role="button"
@@ -1630,7 +1641,23 @@ export function CollectionsPage() {
                             </span>
                           </div>
 
-                          <span className={`pile-reveal-cta ${isSelected ? "viewing" : ""}`}>
+                          <span
+                            className={`pile-reveal-cta ${isSelected ? "viewing" : ""}`}
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              if (!isSelected) {
+                                setActiveStackIndex(idx);
+                                setSelectedStackId(card.id);
+                                setSelectedCategory(card.categoryFilter);
+                                setSelectedType(card.typeFilter);
+                                setSelectedPurity("All");
+                                setSelectedOccasion("All");
+                              }
+                              setTimeout(() => {
+                                document.getElementById("stack-curated-showcase")?.scrollIntoView({ behavior: "smooth", block: "start" });
+                              }, 100);
+                            }}
+                          >
                             {isSelected ? (
                               <>
                                 <Check size={12} /> {t("deckViewingBtn")}
