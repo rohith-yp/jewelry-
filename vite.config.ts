@@ -7,9 +7,19 @@
 import { defineConfig } from "@lovable.dev/vite-tanstack-config";
 
 export default defineConfig({
+  vite: {
+    server: {
+      allowedHosts: true,
+    },
+  },
+  nitro: {
+    // Automatically target Vercel Build Output API v3 when deploying to Vercel
+    preset: process.env.VERCEL ? "vercel" : process.env.NITRO_PRESET || undefined,
+  },
   tanstackStart: {
     // Redirect TanStack Start's bundled server entry to src/server.ts (our SSR error wrapper).
     // nitro/vite builds from this
     server: { entry: "server" },
   },
 });
+

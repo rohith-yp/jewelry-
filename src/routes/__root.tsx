@@ -11,7 +11,7 @@ import { useEffect, type ReactNode } from "react";
 
 import appCss from "../styles.css?url";
 import { reportLovableError } from "../lib/lovable-error-reporting";
-import { SiteHeader } from "../components/jewellery-site";
+import { SiteHeader, SiteFooter, LanguageProvider } from "../components/jewellery-site";
 
 function NotFoundComponent() {
   return (
@@ -121,8 +121,11 @@ function RootComponent() {
 
   return (
     <QueryClientProvider client={queryClient}>
-      <SiteHeader />
-      <Outlet />
+      <LanguageProvider>
+        <SiteHeader />
+        <Outlet />
+        <SiteFooter />
+      </LanguageProvider>
     </QueryClientProvider>
   );
 }
