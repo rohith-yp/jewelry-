@@ -33,7 +33,7 @@ import { createContext, useContext, useState, useEffect, useCallback, useRef, ty
 import heroPoster from "@/assets/bohras_hero_poster.jpg";
 import heroPosterMobile from "@/assets/bohras_hero_poster_mobile.jpg";
 import bohrasShowroomCollage from "@/assets/bohras_showroom_collage.png";
-import ornateGreenAndGoldJewelleryShopCollage from "@/assets/Ornate_Green_and_Gold_Jewellery_Shop_Collage.png";
+import ornateGreenAndGoldJewelleryShopCollage from "@/assets/ornate_green_and_gold_jewellery_shop_collage.png";
 import ornateGoldFramedJewelleryCollage from "@/assets/Ornate_Gold-Framed_Jewellery_Collage.png";
 import bohrasContactHeroStorefront from "@/assets/bohras_contact_hero_storefront.png";
 import bohrasContactStorefrontShowcase from "@/assets/bohras_contact_storefront_showcase.png";
