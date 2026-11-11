@@ -98,6 +98,8 @@ const translations: Record<Language, Record<string, string>> = {
     bookShowroomAppointment: "Book Showroom Appointment",
     quickViewDirectCall: "Direct Call",
     quickViewWhatsApp: "WhatsApp Enquiry",
+    browseByCategoryTab: "By Category",
+    browseByOccasionTab: "By Occasion",
     navHeader: "Navigation",
     ourCategories: "Our Categories",
     visitShowroom: "Visit Our Showroom",
@@ -342,6 +344,8 @@ const translations: Record<Language, Record<string, string>> = {
     bookShowroomAppointment: "ಷೋರೂಂ ಅಪಾಯಿಂಟ್‌ಮೆಂಟ್ ಕಾಯ್ದಿರಿಸಿ",
     quickViewDirectCall: "ನೇರ ಕರೆ",
     quickViewWhatsApp: "ವಾಟ್ಸಾಪ್ ವಿಚಾರಣೆ",
+    browseByCategoryTab: "ವರ್ಗದ ಪ್ರಕಾರ",
+    browseByOccasionTab: "ಸಂದರ್ಭದ ಪ್ರಕಾರ",
     navHeader: "ನೆಾವಿಗೇಷನ್",
     ourCategories: "ನಮ್ಮ ಆಭರಣ ವರ್ಗಗಳು",
     visitShowroom: "ನಮ್ಮ ಷೋರೂಂಗೆ ಭೇಟಿ ನೀಡಿ",
@@ -1354,9 +1358,10 @@ export function CollectionsPage() {
   const [activeProduct, setActiveProduct] = useState<Product | null>(null);
   const [toastMessage, setToastMessage] = useState<string | null>(null);
 
-  // Category card selection state (null by default so no collection is popped up until user clicks)
+  // Category & Occasion card selection state (null by default so no collection is popped up until user clicks)
   const [selectedStackId, setSelectedStackId] = useState<string | null>(null);
   const [activeStackIndex, setActiveStackIndex] = useState(-1);
+  const [discoveryTab, setDiscoveryTab] = useState<"category" | "occasion">("category");
   const curatedRowRef = useRef<HTMLDivElement>(null);
   const spreadStageRef = useRef<HTMLDivElement>(null);
 
@@ -1454,18 +1459,78 @@ export function CollectionsPage() {
     },
   ];
 
+  const occasionItems = [
+    {
+      id: "occasion-temple",
+      name: "Temple Wear",
+      suiteNo: "O1",
+      shortName: "Temple Wear",
+      titleKey: "occasionTempleWearTitle",
+      tagKey: "occasionTempleWearTitle",
+      copyKey: "occasionTempleWearDesc",
+      descKey: "occasionTempleWearDesc",
+      image: festiveOccasionImage,
+      badge: "22K Festive & Temple",
+      categoryFilter: "All",
+      typeFilter: "Temple",
+      occasionFilter: "Festival",
+      filterFn: (p: Product) => p.occasion === "Festival" || p.type === "Temple" || p.type === "Antique Jewellery",
+    },
+    {
+      id: "occasion-daily",
+      name: "Daily Wear",
+      suiteNo: "O2",
+      shortName: "Daily Wear",
+      titleKey: "occasionDailyWearTitle",
+      tagKey: "occasionDailyWearTitle",
+      copyKey: "occasionDailyWearDesc",
+      descKey: "occasionDailyWearDesc",
+      image: dailywearOccasionImage,
+      badge: "Lightweight Gold",
+      categoryFilter: "All",
+      typeFilter: "Gold Chains",
+      occasionFilter: "Everyday",
+      filterFn: (p: Product) => p.occasion === "Everyday" || p.type === "Gold Chains" || (p.category === "Rings" && p.rawPrice < 50000),
+    },
+    {
+      id: "occasion-bridal",
+      name: "Bridal Wear",
+      suiteNo: "O3",
+      shortName: "Bridal & Wedding",
+      titleKey: "occasionBridalWearTitle",
+      tagKey: "occasionBridalWearTitle",
+      copyKey: "occasionBridalWearDesc",
+      descKey: "occasionBridalWearDesc",
+      image: weddingOccasionImage,
+      badge: "Royal Bridal Sets",
+      categoryFilter: "All",
+      typeFilter: "All",
+      occasionFilter: "Wedding",
+      filterFn: (p: Product) => p.occasion === "Wedding" || p.type === "Polki" || p.rawPrice >= 300000,
+    },
+    {
+      id: "occasion-gifts",
+      name: "Gifts & Celebrations",
+      suiteNo: "O4",
+      shortName: "Gifts & Articles",
+      titleKey: "occasionGiftsTitle",
+      tagKey: "occasionGiftsTitle",
+      copyKey: "occasionGiftsDesc",
+      descKey: "occasionGiftsDesc",
+      image: giftsOccasionImage,
+      badge: "Pure Silver & Gifts",
+      categoryFilter: "All",
+      typeFilter: "Silver",
+      occasionFilter: "Gift",
+      filterFn: (p: Product) => p.occasion === "Gift" || p.type === "Silver" || p.type === "Silver Coated" || p.category === "Silver",
+    },
+  ];
+
+  const allCards = [...stackCards, ...occasionItems];
+  const deckCards = discoveryTab === "category" ? stackCards : occasionItems;
+
   const currentStackCard = selectedStackId
-    ? stackCards.find((c) => c.id === selectedStackId) || {
-        id: "all",
-        titleKey: "stackCardAllTitle",
-        tagKey: "stackCardAllTag",
-        descKey: "stackCardAllDesc",
-        image: craftImage,
-        badge: "All 24 Collections",
-        categoryFilter: "All",
-        typeFilter: "All",
-        filterFn: () => true,
-      }
+    ? allCards.find((c) => c.id === selectedStackId) || null
     : null;
 
   const suitableProducts = currentStackCard
@@ -1476,7 +1541,7 @@ export function CollectionsPage() {
     setSelectedCategory(card.categoryFilter);
     setSelectedType(card.typeFilter);
     setSelectedPurity("All");
-    setSelectedOccasion("All");
+    setSelectedOccasion(card.occasionFilter || "All");
     document.getElementById("product-grid-section")?.scrollIntoView({ behavior: "smooth" });
   };
 
@@ -1511,41 +1576,6 @@ export function CollectionsPage() {
     filtered = [...filtered].sort((a, b) => parseFloat(a.weight) - parseFloat(b.weight));
   }
 
-  const occasionItems = [
-    {
-      name: "Temple Wear",
-      titleKey: "occasionTempleWearTitle",
-      copyKey: "occasionTempleWearDesc",
-      image: festiveOccasionImage,
-      occasionFilter: "Festival",
-      typeFilter: "Temple",
-    },
-    {
-      name: "Daily Wear",
-      titleKey: "occasionDailyWearTitle",
-      copyKey: "occasionDailyWearDesc",
-      image: dailywearOccasionImage,
-      occasionFilter: "Everyday",
-      typeFilter: "All",
-    },
-    {
-      name: "Bridal Wear",
-      titleKey: "occasionBridalWearTitle",
-      copyKey: "occasionBridalWearDesc",
-      image: weddingOccasionImage,
-      occasionFilter: "Wedding",
-      typeFilter: "All",
-    },
-    {
-      name: "Gifts & Celebrations",
-      titleKey: "occasionGiftsTitle",
-      copyKey: "occasionGiftsDesc",
-      image: giftsOccasionImage,
-      occasionFilter: "Gift",
-      typeFilter: "All",
-    },
-  ];
-
   return (
     <>
       <main className="ivory-page collections-page">
@@ -1565,12 +1595,54 @@ export function CollectionsPage() {
             <span className="section-kicker">{t("stackSectionEyebrow")}</span>
             <h2>{t("stackSectionTitle")}</h2>
             <p className="pile-discovery-subtitle">{t("stackSectionDesc")}</p>
+
+            {/* Discovery Mode Switcher: By Category vs By Occasion */}
+            <div className="collection-view-tabs" role="tablist">
+              <button
+                type="button"
+                role="tab"
+                aria-selected={discoveryTab === "category"}
+                className={`collection-view-tab ${discoveryTab === "category" ? "active" : ""}`}
+                onClick={() => {
+                  setDiscoveryTab("category");
+                  if (discoveryTab !== "category") {
+                    setSelectedStackId(null);
+                    setActiveStackIndex(-1);
+                    setSelectedCategory("All");
+                    setSelectedType("All");
+                    setSelectedOccasion("All");
+                  }
+                }}
+              >
+                <span>{t("browseByCategoryTab")}</span>
+                <small>(6)</small>
+              </button>
+              <button
+                type="button"
+                role="tab"
+                aria-selected={discoveryTab === "occasion"}
+                className={`collection-view-tab ${discoveryTab === "occasion" ? "active" : ""}`}
+                onClick={() => {
+                  setDiscoveryTab("occasion");
+                  if (discoveryTab !== "occasion") {
+                    setSelectedStackId(null);
+                    setActiveStackIndex(-1);
+                    setSelectedCategory("All");
+                    setSelectedType("All");
+                    setSelectedOccasion("All");
+                  }
+                }}
+              >
+                <span>{t("browseByOccasionTab")}</span>
+                <small>(4)</small>
+              </button>
+            </div>
           </div>
 
           <div className="pile-showcase-container">
             {/* The Physical Spread of Cards Stage */}
-            <div className="pile-spread-stage" ref={spreadStageRef}>
-              {stackCards.map((card, idx) => {
+            <div className={`pile-spread-stage deck-count-${deckCards.length}`} ref={spreadStageRef}>
+              {deckCards.map((card, idx) => {
                 const isSelected = selectedStackId === card.id;
 
                 return (
@@ -1583,13 +1655,14 @@ export function CollectionsPage() {
                         setActiveStackIndex(-1);
                         setSelectedCategory("All");
                         setSelectedType("All");
+                        setSelectedOccasion("All");
                       } else {
                         setActiveStackIndex(idx);
                         setSelectedStackId(card.id);
                         setSelectedCategory(card.categoryFilter);
                         setSelectedType(card.typeFilter);
                         setSelectedPurity("All");
-                        setSelectedOccasion("All");
+                        setSelectedOccasion(card.occasionFilter || "All");
                       }
                     }}
                     onKeyDown={(e) => {
@@ -1600,13 +1673,14 @@ export function CollectionsPage() {
                           setActiveStackIndex(-1);
                           setSelectedCategory("All");
                           setSelectedType("All");
+                          setSelectedOccasion("All");
                         } else {
                           setActiveStackIndex(idx);
                           setSelectedStackId(card.id);
                           setSelectedCategory(card.categoryFilter);
                           setSelectedType(card.typeFilter);
                           setSelectedPurity("All");
-                          setSelectedOccasion("All");
+                          setSelectedOccasion(card.occasionFilter || "All");
                         }
                       }
                     }}
@@ -1665,13 +1739,14 @@ export function CollectionsPage() {
                                 setActiveStackIndex(-1);
                                 setSelectedCategory("All");
                                 setSelectedType("All");
+                                setSelectedOccasion("All");
                               } else {
                                 setActiveStackIndex(idx);
                                 setSelectedStackId(card.id);
                                 setSelectedCategory(card.categoryFilter);
                                 setSelectedType(card.typeFilter);
                                 setSelectedPurity("All");
-                                setSelectedOccasion("All");
+                                setSelectedOccasion(card.occasionFilter || "All");
                                 setTimeout(() => {
                                   document.getElementById("stack-curated-showcase")?.scrollIntoView({ behavior: "smooth", block: "start" });
                                 }, 120);
@@ -1740,6 +1815,7 @@ export function CollectionsPage() {
                       setActiveStackIndex(-1);
                       setSelectedCategory("All");
                       setSelectedType("All");
+                      setSelectedOccasion("All");
                     }}
                     title={t("stackClearSelection")}
                   >
@@ -1790,7 +1866,91 @@ export function CollectionsPage() {
           </div>
         )}
 
-        {/* Hallmarked Promise Strip - Always Visible */}
+        {/* Shop By Occasion Section - Seamlessly Merged with Collections */}
+        <section className="site-shell occasions" id="occasions-section">
+          <div className="section-header-center" style={{ marginBottom: "20px" }}>
+            <span className="section-kicker">{t("stackSectionEyebrow")}</span>
+            <h2>{t("shopByOccasion")}</h2>
+          </div>
+          <div className="occasion-row">
+            {occasionItems.map((item) => {
+              const isOccasionSelected = selectedStackId === item.id;
+              return (
+                <div
+                  key={item.id}
+                  className={`occasion-card-wrap ${isOccasionSelected ? "is-selected-occasion" : ""}`}
+                  onClick={() => {
+                    if (isOccasionSelected) {
+                      setSelectedStackId(null);
+                      setActiveStackIndex(-1);
+                      setSelectedCategory("All");
+                      setSelectedType("All");
+                      setSelectedOccasion("All");
+                    } else {
+                      setSelectedStackId(item.id);
+                      setDiscoveryTab("occasion");
+                      const idx = occasionItems.findIndex((c) => c.id === item.id);
+                      setActiveStackIndex(idx);
+                      setSelectedCategory("All");
+                      setSelectedType("All");
+                      setSelectedOccasion(item.occasionFilter);
+                      setTimeout(() => {
+                        document.getElementById("stack-curated-showcase")?.scrollIntoView({ behavior: "smooth", block: "start" });
+                      }, 120);
+                    }
+                  }}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter" || e.key === " ") {
+                      e.preventDefault();
+                      if (isOccasionSelected) {
+                        setSelectedStackId(null);
+                        setActiveStackIndex(-1);
+                        setSelectedCategory("All");
+                        setSelectedType("All");
+                        setSelectedOccasion("All");
+                      } else {
+                        setSelectedStackId(item.id);
+                        setDiscoveryTab("occasion");
+                        const idx = occasionItems.findIndex((c) => c.id === item.id);
+                        setActiveStackIndex(idx);
+                        setSelectedCategory("All");
+                        setSelectedType("All");
+                        setSelectedOccasion(item.occasionFilter);
+                        setTimeout(() => {
+                          document.getElementById("stack-curated-showcase")?.scrollIntoView({ behavior: "smooth", block: "start" });
+                        }, 120);
+                      }
+                    }
+                  }}
+                  role="button"
+                  tabIndex={0}
+                  aria-label={`${t(item.titleKey)} collection`}
+                  style={{ cursor: "pointer" }}
+                >
+                  <div className="collection-card">
+                    <div className="collection-card-thumb">
+                      <img src={item.image} alt={t(item.titleKey)} loading="lazy" width={500} height={400} />
+                      {isOccasionSelected && (
+                        <span className="occasion-selected-badge">
+                          <Check size={11} /> {t("selectedTag")}
+                        </span>
+                      )}
+                    </div>
+                    <div className="collection-card-details">
+                      <h3>{t(item.titleKey)}</h3>
+                      <p>{t(item.copyKey)}</p>
+                      <span className="collection-arrow-circle">
+                        {isOccasionSelected ? <Check size={13} /> : <ArrowRight size={13} />}
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        </section>
+
+        {/* Hallmarked Promise Strip - Always Visible Assurance */}
         <div className="site-shell" style={{ paddingBlock: "10px 30px" }}>
           <div className="promise-strip">
             <Value icon={<Gem />} title={t("handcraftedTitle")}>{t("handcraftedSub")}</Value>
@@ -1799,55 +1959,6 @@ export function CollectionsPage() {
             <Value icon={<Heart />} title={t("lifetimeExchangeTitle")}>{t("lifetimeExchangeSub")}</Value>
           </div>
         </div>
-
-        {/* Shop By Occasion Section - Always Visible */}
-        <section className="site-shell occasions">
-          <h2>{t("shopByOccasion")}</h2>
-          <div className="occasion-row">
-            {occasionItems.map((item) => (
-              <div
-                key={item.name}
-                className="occasion-card-wrap"
-                onClick={() => {
-                  const occasionMap: Record<string, string> = {
-                    "Temple Wear": "necklaces",
-                    "Daily Wear": "chains",
-                    "Bridal Wear": "necklaces",
-                    "Gifts & Celebrations": "silver",
-                  };
-                  const targetStackId = occasionMap[item.name] || "necklaces";
-                  setSelectedStackId(targetStackId);
-                  const stackIdx = stackCards.findIndex((c) => c.id === targetStackId);
-                  if (stackIdx !== -1) {
-                    setActiveStackIndex(stackIdx);
-                    const targetCard = stackCards[stackIdx];
-                    setSelectedCategory(targetCard.categoryFilter);
-                    setSelectedType(targetCard.typeFilter);
-                    setSelectedPurity("All");
-                    setSelectedOccasion("All");
-                  }
-                  setTimeout(() => {
-                    document.getElementById("stack-curated-showcase")?.scrollIntoView({ behavior: "smooth" });
-                  }, 50);
-                }}
-                style={{ cursor: "pointer" }}
-              >
-                <div className="collection-card">
-                  <div className="collection-card-thumb">
-                    <img src={item.image} alt={t(item.titleKey)} loading="lazy" width={500} height={400} />
-                  </div>
-                  <div className="collection-card-details">
-                    <h3>{t(item.titleKey)}</h3>
-                    <p>{t(item.copyKey)}</p>
-                    <span className="collection-arrow-circle">
-                      <ArrowRight size={13} />
-                    </span>
-                  </div>
-                </div>
-              </div>
-            ))}
-          </div>
-        </section>
       </main>
 
       {/* Quick View Modal */}
