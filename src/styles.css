@@ -1091,19 +1091,24 @@
 
 /* Hovering Any Card in the Spread */
 .pile-spread-card:hover {
-  transform: translateY(-26px) rotate(0deg) scale(1.07) !important;
+  transform: translateY(-16px) rotate(0deg) scale(1.03) !important;
   z-index: 25 !important;
-  box-shadow: 0 26px 54px rgba(0, 0, 0, 0.42),
-              0 0 0 2px #dfba53 !important;
+  box-shadow: 0 20px 42px rgba(0, 0, 0, 0.4),
+              0 0 0 1.5px #dfba53 !important;
 }
 
-/* Selected Active Card */
+/* Selected Active Card - Elevated and Highlighted Above Other Cards */
 .pile-spread-card.is-selected-card {
-  transform: translateY(-18px) rotate(0deg) scale(1.04) !important;
-  z-index: 20 !important;
-  box-shadow: 0 28px 56px rgba(8, 28, 20, 0.48),
+  transform: translateY(-28px) rotate(0deg) scale(1.06) !important;
+  z-index: 35 !important;
+  box-shadow: 0 30px 60px rgba(8, 28, 20, 0.55),
               0 0 0 2px #dfba53,
-              0 0 30px rgba(223, 186, 83, 0.32) !important;
+              0 0 32px rgba(223, 186, 83, 0.35) !important;
+}
+
+.pile-spread-card.is-selected-card:hover {
+  transform: translateY(-28px) rotate(0deg) scale(1.06) !important;
+  z-index: 35 !important;
 }
 
 /* Luxurious Card Surface */
@@ -1327,10 +1332,19 @@
     transform: none !important;
   }
   .pile-spread-card:hover {
-    transform: translateY(-8px) scale(1.03) !important;
+    transform: translateY(-8px) scale(1.02) !important;
+    z-index: 10 !important;
   }
   .pile-spread-card.is-selected-card {
-    transform: translateY(-6px) scale(1.02) !important;
+    transform: translateY(-16px) scale(1.05) !important;
+    z-index: 25 !important;
+    box-shadow: 0 20px 45px rgba(8, 28, 20, 0.5),
+                0 0 0 2px #dfba53,
+                0 0 24px rgba(223, 186, 83, 0.35) !important;
+  }
+  .pile-spread-card.is-selected-card:hover {
+    transform: translateY(-16px) scale(1.05) !important;
+    z-index: 25 !important;
   }
 }
 
@@ -1376,7 +1390,7 @@
     scroll-snap-type: x mandatory;
     scroll-padding: 0 16px;
     gap: 14px !important;
-    padding: 10px 16px 20px !important;
+    padding: 16px 16px 24px !important;
     scrollbar-width: none;
     -webkit-overflow-scrolling: touch;
     margin: 0 auto;
@@ -1419,11 +1433,11 @@
 
   /* Active / Selected Category Card: Elevated with Gold Border Frame */
   .pile-spread-card.is-selected-card {
-    transform: translateY(-4px) !important;
-    z-index: 3 !important;
-    box-shadow: 0 12px 28px rgba(8, 28, 20, 0.5),
+    transform: translateY(-10px) scale(1.03) !important;
+    z-index: 15 !important;
+    box-shadow: 0 16px 32px rgba(8, 28, 20, 0.6),
                 0 0 0 2px #dfba53,
-                0 0 20px rgba(223, 186, 83, 0.35) !important;
+                0 0 24px rgba(223, 186, 83, 0.4) !important;
   }
 
   .pile-spread-card:active {
@@ -1537,7 +1551,7 @@
 /* Extra small mobile screens (<= 420px) */
 @media (max-width: 420px) {
   .pile-spread-stage {
-    padding: 8px 12px 16px !important;
+    padding: 14px 12px 20px !important;
     gap: 12px !important;
     scroll-padding: 0 12px;
   }

@@ -1350,9 +1350,9 @@ export function CollectionsPage() {
   const [activeProduct, setActiveProduct] = useState<Product | null>(null);
   const [toastMessage, setToastMessage] = useState<string | null>(null);
 
-  // Stack card selection state (default to Suite 03 'necklaces' to mirror royal showroom centerpiece)
-  const [selectedStackId, setSelectedStackId] = useState<string | null>("necklaces");
-  const [activeStackIndex, setActiveStackIndex] = useState(2);
+  // Category card selection state (null by default so no collection is popped up until user clicks)
+  const [selectedStackId, setSelectedStackId] = useState<string | null>(null);
+  const [activeStackIndex, setActiveStackIndex] = useState(-1);
   const curatedRowRef = useRef<HTMLDivElement>(null);
   const spreadStageRef = useRef<HTMLDivElement>(null);
 
@@ -1575,7 +1575,10 @@ export function CollectionsPage() {
                     className={`pile-card-wrapper pile-spread-card spread-pos-${idx} ${isSelected ? "is-selected-card" : ""}`}
                     onClick={() => {
                       if (selectedStackId === card.id) {
-                        document.getElementById("stack-curated-showcase")?.scrollIntoView({ behavior: "smooth", block: "start" });
+                        setSelectedStackId(null);
+                        setActiveStackIndex(-1);
+                        setSelectedCategory("All");
+                        setSelectedType("All");
                       } else {
                         setActiveStackIndex(idx);
                         setSelectedStackId(card.id);
@@ -1583,6 +1586,24 @@ export function CollectionsPage() {
                         setSelectedType(card.typeFilter);
                         setSelectedPurity("All");
                         setSelectedOccasion("All");
+                      }
+                    }}
+                    onKeyDown={(e) => {
+                      if (e.key === "Enter" || e.key === " ") {
+                        e.preventDefault();
+                        if (selectedStackId === card.id) {
+                          setSelectedStackId(null);
+                          setActiveStackIndex(-1);
+                          setSelectedCategory("All");
+                          setSelectedType("All");
+                        } else {
+                          setActiveStackIndex(idx);
+                          setSelectedStackId(card.id);
+                          setSelectedCategory(card.categoryFilter);
+                          setSelectedType(card.typeFilter);
+                          setSelectedPurity("All");
+                          setSelectedOccasion("All");
+                        }
                       }
                     }}
                     role="button"
@@ -1635,17 +1656,22 @@ export function CollectionsPage() {
                             className={`pile-reveal-cta ${isSelected ? "viewing" : ""}`}
                             onClick={(e) => {
                               e.stopPropagation();
-                              if (!isSelected) {
+                              if (isSelected) {
+                                setSelectedStackId(null);
+                                setActiveStackIndex(-1);
+                                setSelectedCategory("All");
+                                setSelectedType("All");
+                              } else {
                                 setActiveStackIndex(idx);
                                 setSelectedStackId(card.id);
                                 setSelectedCategory(card.categoryFilter);
                                 setSelectedType(card.typeFilter);
                                 setSelectedPurity("All");
                                 setSelectedOccasion("All");
+                                setTimeout(() => {
+                                  document.getElementById("stack-curated-showcase")?.scrollIntoView({ behavior: "smooth", block: "start" });
+                                }, 120);
                               }
-                              setTimeout(() => {
-                                document.getElementById("stack-curated-showcase")?.scrollIntoView({ behavior: "smooth", block: "start" });
-                              }, 100);
                             }}
                           >
                             {isSelected ? (
@@ -1670,148 +1696,154 @@ export function CollectionsPage() {
           </div>
         </section>
 
-        {/* When user clicks any card: reveal the curated row and full catalog! Before click: ONLY cards are shown */}
+        {/* When user clicks any category card: reveal its matching curated designs */}
         {selectedStackId && (
-          <>
-            {/* Suitable Products in a Row */}
-            <div className="site-shell stack-curated-showcase-shell">
-              <div className="stack-curated-showcase" id="stack-curated-showcase">
-                <div className="curated-header">
-                  <div className="curated-title-group">
-                    <span className="curated-pill">{currentStackCard ? t(currentStackCard.tagKey) : ""}</span>
-                    <h3>
-                      {t("stackSelectedRowTitle")}: <em>{currentStackCard ? t(currentStackCard.titleKey) : ""}</em>
-                    </h3>
-                    <p className="curated-desc-line">
-                      {suitableProducts.length} {t("stackItemsFound")} • {currentStackCard ? t(currentStackCard.descKey) : ""}
-                    </p>
-                  </div>
-                  <div className="curated-actions">
-                    <div className="curated-nav-buttons">
-                      <button
-                        className="curated-arrow-btn"
-                        onClick={() => scrollCurated("left")}
-                        aria-label="Scroll left"
-                        title="Previous"
-                      >
-                        <ChevronLeft size={16} />
-                      </button>
-                      <button
-                        className="curated-arrow-btn"
-                        onClick={() => scrollCurated("right")}
-                        aria-label="Scroll right"
-                        title="Next"
-                      >
-                        <ChevronRight size={16} />
-                      </button>
-                    </div>
+          <div className="site-shell stack-curated-showcase-shell">
+            <div className="stack-curated-showcase" id="stack-curated-showcase">
+              <div className="curated-header">
+                <div className="curated-title-group">
+                  <span className="curated-pill">{currentStackCard ? t(currentStackCard.tagKey) : ""}</span>
+                  <h3>
+                    {t("stackSelectedRowTitle")}: <em>{currentStackCard ? t(currentStackCard.titleKey) : ""}</em>
+                  </h3>
+                  <p className="curated-desc-line">
+                    {suitableProducts.length} {t("stackItemsFound")} • {currentStackCard ? t(currentStackCard.descKey) : ""}
+                  </p>
+                </div>
+                <div className="curated-actions">
+                  <div className="curated-nav-buttons">
                     <button
-                      className="clear-selection-btn"
-                      onClick={() => {
-                        setSelectedStackId(null);
-                        setActiveStackIndex(-1);
-                      }}
-                      title={t("stackClearSelection")}
+                      className="curated-arrow-btn"
+                      onClick={() => scrollCurated("left")}
+                      aria-label="Scroll left"
+                      title="Previous"
                     >
-                      <X size={14} /> {t("stackClearSelection")}
+                      <ChevronLeft size={16} />
+                    </button>
+                    <button
+                      className="curated-arrow-btn"
+                      onClick={() => scrollCurated("right")}
+                      aria-label="Scroll right"
+                      title="Next"
+                    >
+                      <ChevronRight size={16} />
                     </button>
                   </div>
-                </div>
-
-                {/* Horizontal Row with Smooth Scrolling */}
-                <div className="curated-slider-container">
-                  <div className="curated-products-row" ref={curatedRowRef}>
-                    {suitableProducts.map((product) => (
-                      <article key={product.id} className="curated-row-card">
-                        <div className="curated-card-media">
-                          <img src={product.image} alt={product.name} loading="lazy" width={320} height={240} />
-                          <span className="curated-purity-tag">{product.purity}</span>
-                          <span className="curated-weight-pill">Wt: {product.weight}</span>
-                        </div>
-                        <div className="curated-card-details">
-                          <h4>{product.name}</h4>
-                          <div className="curated-card-meta">
-                            <span className="curated-type-badge">{product.type}</span>
-                            <span className="curated-occasion-badge">{product.occasion}</span>
-                          </div>
-                          <p className="curated-card-desc">{product.description}</p>
-                          <div className="curated-card-footer">
-                            <button
-                              className="curated-quickview-button"
-                              onClick={() => setActiveProduct(product)}
-                            >
-                              <Eye size={13} /> {t("stackQuickViewBtn")}
-                            </button>
-                            <a
-                              href={`https://wa.me/919876543210?text=${encodeURIComponent(`Hi Bohra's Jewellery, I would like to enquire about ${product.name} (${product.purity}, ${product.weight}) from your collection.`)}`}
-                              target="_blank"
-                              rel="noreferrer"
-                              className="curated-enquire-button"
-                            >
-                              <ShoppingBag size={13} /> {t("stackEnquireBtn")}
-                            </a>
-                          </div>
-                        </div>
-                      </article>
-                    ))}
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            {/* Hallmarked Promise Strip */}
-            <div className="site-shell" style={{ paddingBlock: "10px 30px" }}>
-              <div className="promise-strip">
-                <Value icon={<Gem />} title={t("handcraftedTitle")}>{t("handcraftedSub")}</Value>
-                <Value icon={<ShieldCheck />} title={t("hallmarkedTitle")}>{t("hallmarkedSub")}</Value>
-                <Value icon={<ShoppingBag />} title={t("freeShippingTitle")}>{t("freeShippingSub")}</Value>
-                <Value icon={<Heart />} title={t("lifetimeExchangeTitle")}>{t("lifetimeExchangeSub")}</Value>
-              </div>
-            </div>
-
-            {/* Shop By Occasion Section */}
-            <section className="site-shell occasions">
-              <h2>{t("shopByOccasion")}</h2>
-              <div className="occasion-row">
-                {occasionItems.map((item) => (
-                  <div
-                    key={item.name}
-                    className="occasion-card-wrap"
+                  <button
+                    className="clear-selection-btn"
                     onClick={() => {
-                      const occasionMap: Record<string, string> = {
-                        "Temple Wear": "necklaces",
-                        "Daily Wear": "chains",
-                        "Bridal Wear": "necklaces",
-                        "Gifts & Celebrations": "silver",
-                      };
-                      const targetStackId = occasionMap[item.name] || "necklaces";
-                      setSelectedStackId(targetStackId);
-                      const stackIdx = stackCards.findIndex((c) => c.id === targetStackId);
-                      if (stackIdx !== -1) setActiveStackIndex(stackIdx);
-                      setTimeout(() => {
-                        document.getElementById("stack-curated-showcase")?.scrollIntoView({ behavior: "smooth" });
-                      }, 50);
+                      setSelectedStackId(null);
+                      setActiveStackIndex(-1);
+                      setSelectedCategory("All");
+                      setSelectedType("All");
                     }}
-                    style={{ cursor: "pointer" }}
+                    title={t("stackClearSelection")}
                   >
-                    <div className="collection-card">
-                      <div className="collection-card-thumb">
-                        <img src={item.image} alt={t(item.titleKey)} loading="lazy" width={500} height={400} />
-                      </div>
-                      <div className="collection-card-details">
-                        <h3>{t(item.titleKey)}</h3>
-                        <p>{t(item.copyKey)}</p>
-                        <span className="collection-arrow-circle">
-                          <ArrowRight size={13} />
-                        </span>
-                      </div>
-                    </div>
-                  </div>
-                ))}
+                    <X size={14} /> {t("stackClearSelection")}
+                  </button>
+                </div>
               </div>
-            </section>
-          </>
+
+              {/* Horizontal Row with Smooth Scrolling */}
+              <div className="curated-slider-container">
+                <div className="curated-products-row" ref={curatedRowRef}>
+                  {suitableProducts.map((product) => (
+                    <article key={product.id} className="curated-row-card">
+                      <div className="curated-card-media">
+                        <img src={product.image} alt={product.name} loading="lazy" width={320} height={240} />
+                        <span className="curated-purity-tag">{product.purity}</span>
+                        <span className="curated-weight-pill">Wt: {product.weight}</span>
+                      </div>
+                      <div className="curated-card-details">
+                        <h4>{product.name}</h4>
+                        <div className="curated-card-meta">
+                          <span className="curated-type-badge">{product.type}</span>
+                          <span className="curated-occasion-badge">{product.occasion}</span>
+                        </div>
+                        <p className="curated-card-desc">{product.description}</p>
+                        <div className="curated-card-footer">
+                          <button
+                            className="curated-quickview-button"
+                            onClick={() => setActiveProduct(product)}
+                          >
+                            <Eye size={13} /> {t("stackQuickViewBtn")}
+                          </button>
+                          <a
+                            href={`https://wa.me/919876543210?text=${encodeURIComponent(`Hi Bohra's Jewellery, I would like to enquire about ${product.name} (${product.purity}, ${product.weight}) from your collection.`)}`}
+                            target="_blank"
+                            rel="noreferrer"
+                            className="curated-enquire-button"
+                          >
+                            <ShoppingBag size={13} /> {t("stackEnquireBtn")}
+                          </a>
+                        </div>
+                      </div>
+                    </article>
+                  ))}
+                </div>
+              </div>
+            </div>
+          </div>
         )}
+
+        {/* Hallmarked Promise Strip - Always Visible */}
+        <div className="site-shell" style={{ paddingBlock: "10px 30px" }}>
+          <div className="promise-strip">
+            <Value icon={<Gem />} title={t("handcraftedTitle")}>{t("handcraftedSub")}</Value>
+            <Value icon={<ShieldCheck />} title={t("hallmarkedTitle")}>{t("hallmarkedSub")}</Value>
+            <Value icon={<ShoppingBag />} title={t("freeShippingTitle")}>{t("freeShippingSub")}</Value>
+            <Value icon={<Heart />} title={t("lifetimeExchangeTitle")}>{t("lifetimeExchangeSub")}</Value>
+          </div>
+        </div>
+
+        {/* Shop By Occasion Section - Always Visible */}
+        <section className="site-shell occasions">
+          <h2>{t("shopByOccasion")}</h2>
+          <div className="occasion-row">
+            {occasionItems.map((item) => (
+              <div
+                key={item.name}
+                className="occasion-card-wrap"
+                onClick={() => {
+                  const occasionMap: Record<string, string> = {
+                    "Temple Wear": "necklaces",
+                    "Daily Wear": "chains",
+                    "Bridal Wear": "necklaces",
+                    "Gifts & Celebrations": "silver",
+                  };
+                  const targetStackId = occasionMap[item.name] || "necklaces";
+                  setSelectedStackId(targetStackId);
+                  const stackIdx = stackCards.findIndex((c) => c.id === targetStackId);
+                  if (stackIdx !== -1) {
+                    setActiveStackIndex(stackIdx);
+                    const targetCard = stackCards[stackIdx];
+                    setSelectedCategory(targetCard.categoryFilter);
+                    setSelectedType(targetCard.typeFilter);
+                    setSelectedPurity("All");
+                    setSelectedOccasion("All");
+                  }
+                  setTimeout(() => {
+                    document.getElementById("stack-curated-showcase")?.scrollIntoView({ behavior: "smooth" });
+                  }, 50);
+                }}
+                style={{ cursor: "pointer" }}
+              >
+                <div className="collection-card">
+                  <div className="collection-card-thumb">
+                    <img src={item.image} alt={t(item.titleKey)} loading="lazy" width={500} height={400} />
+                  </div>
+                  <div className="collection-card-details">
+                    <h3>{t(item.titleKey)}</h3>
+                    <p>{t(item.copyKey)}</p>
+                    <span className="collection-arrow-circle">
+                      <ArrowRight size={13} />
+                    </span>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </section>
       </main>
 
       {/* Quick View Modal */}
