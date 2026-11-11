@@ -20,7 +20,6 @@ import {
   Search,
   ShieldCheck,
   ShoppingBag,
-  Sparkles,
   Star,
   Store,
   Users,
@@ -207,7 +206,7 @@ const translations: Record<Language, Record<string, string>> = {
     deckViewingBtn: "Selected ✓",
     deckDesignsLabel: "Designs",
     deckInSuiteLabel: "Designs",
-    deckHint: "✦ Tap any category to view designs below.",
+    deckHint: "Tap any category to view designs below.",
     stackCardRingsTitle: "Rings",
     stackCardRingsTag: "18K & 22K Gold",
     stackCardRingsDesc: "Solitaires, daily bands, and cocktail rings.",
@@ -449,7 +448,7 @@ const translations: Record<Language, Record<string, string>> = {
     deckViewingBtn: "ಆಯ್ಕೆಯಾಗಿದೆ ✓",
     deckDesignsLabel: "ವಿನ್ಯಾಸಗಳು",
     deckInSuiteLabel: "ವಿನ್ಯಾಸಗಳು",
-    deckHint: "✦ ವಿನ್ಯಾಸಗಳನ್ನು ಕೆಳಗೆ ನೋಡಲು ಕಾರ್ಡ್ ಮೇಲೆ ಒತ್ತಿ.",
+    deckHint: "ವಿನ್ಯಾಸಗಳನ್ನು ಕೆಳಗೆ ನೋಡಲು ಕಾರ್ಡ್ ಮೇಲೆ ಒತ್ತಿ.",
     stackCardRingsTitle: "ಉಂಗುರಗಳು",
     stackCardRingsTag: "18K & 22K ಚಿನ್ನ",
     stackCardRingsDesc: "ಸಾಲಿಟೇರ್, ಬ್ಯಾಂಡ್‌ಗಳು ಮತ್ತು ಉಂಗುರಗಳು.",
@@ -677,9 +676,7 @@ export function SiteHeader() {
 function Eyebrow({ children }: { children: ReactNode }) {
   return (
     <div className="eyebrow">
-      <span className="eyebrow-symbol">✦</span>
       <span className="eyebrow-text">{children}</span>
-      <span className="eyebrow-symbol">✦</span>
     </div>
   );
 }
@@ -1329,7 +1326,7 @@ function ProductCardItem({
     <article className="product-card">
       <div className="product-image">
         <img src={product.image} alt={product.name} loading="lazy" width={800} height={600} />
-        <span className="purity">✦ {product.purity}</span>
+        <span className="purity">{product.purity}</span>
       </div>
       <h3>{product.name}</h3>
       <div className="price-row" style={{ justifyContent: "flex-end" }}>
@@ -1561,7 +1558,7 @@ export function CollectionsPage() {
         {/* Interactive Physical Pile of Cards Discovery Section (Handcrafted & Luxury) */}
         <section className="site-shell pile-discovery-section">
           <div className="pile-discovery-header">
-            <span className="section-kicker">✦ {t("stackSectionEyebrow")}</span>
+            <span className="section-kicker">{t("stackSectionEyebrow")}</span>
             <h2>{t("stackSectionTitle")}</h2>
             <p className="pile-discovery-subtitle">{t("stackSectionDesc")}</p>
           </div>
@@ -1593,12 +1590,6 @@ export function CollectionsPage() {
                     aria-label={`${t(card.titleKey)} suite card`}
                   >
                     <article className="pile-card-surface">
-                      {/* Decorative Gold Filigree Corner Ornaments */}
-                      <span className="pile-corner pile-corner-tl" aria-hidden="true">⌜</span>
-                      <span className="pile-corner pile-corner-tr" aria-hidden="true">⌝</span>
-                      <span className="pile-corner pile-corner-bl" aria-hidden="true">⌞</span>
-                      <span className="pile-corner pile-corner-br" aria-hidden="true">⌟</span>
-
                       {/* Card Header Strip */}
                       <div className="pile-card-topbar">
                         <span className="pile-suite-code">
@@ -1616,7 +1607,7 @@ export function CollectionsPage() {
                           height={300}
                         />
                         <div className="pile-photo-shade" />
-                        <span className="pile-purity-tag">✦ {card.badge}</span>
+                        <span className="pile-purity-tag">{card.badge}</span>
                         {isSelected && (
                           <span className="pile-active-tag">
                             <Check size={12} /> {t("selectedTag")}
@@ -1635,7 +1626,6 @@ export function CollectionsPage() {
                         {/* Card Action & Status */}
                         <div className="pile-card-bottom-action">
                           <div className="pile-count-indicator">
-                            <Sparkles size={11} />
                             <span>
                               {productsData.filter(card.filterFn).length} {t("deckDesignsLabel")}
                             </span>
@@ -1688,7 +1678,7 @@ export function CollectionsPage() {
               <div className="stack-curated-showcase" id="stack-curated-showcase">
                 <div className="curated-header">
                   <div className="curated-title-group">
-                    <span className="curated-pill">✦ {currentStackCard ? t(currentStackCard.tagKey) : ""}</span>
+                    <span className="curated-pill">{currentStackCard ? t(currentStackCard.tagKey) : ""}</span>
                     <h3>
                       {t("stackSelectedRowTitle")}: <em>{currentStackCard ? t(currentStackCard.titleKey) : ""}</em>
                     </h3>
@@ -1735,7 +1725,7 @@ export function CollectionsPage() {
                       <article key={product.id} className="curated-row-card">
                         <div className="curated-card-media">
                           <img src={product.image} alt={product.name} loading="lazy" width={320} height={240} />
-                          <span className="curated-purity-tag">✦ {product.purity}</span>
+                          <span className="curated-purity-tag">{product.purity}</span>
                           <span className="curated-weight-pill">Wt: {product.weight}</span>
                         </div>
                         <div className="curated-card-details">

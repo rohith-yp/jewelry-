@@ -1131,23 +1131,6 @@
   pointer-events: none;
 }
 
-/* Ornate Gold Filigree Corners */
-.pile-corner {
-  position: absolute;
-  color: #dfba53;
-  font-family: serif;
-  font-size: 15px;
-  line-height: 1;
-  pointer-events: none;
-  opacity: 0.85;
-  z-index: 2;
-}
-
-.pile-corner-tl { top: 8px; left: 9px; }
-.pile-corner-tr { top: 8px; right: 9px; }
-.pile-corner-bl { bottom: 8px; left: 9px; }
-.pile-corner-br { bottom: 8px; right: 9px; }
-
 /* Card Top Bar */
 .pile-card-topbar {
   display: flex;
@@ -1465,16 +1448,6 @@
     inset: 4px;
     border-radius: 12px;
   }
-
-  .pile-corner {
-    font-size: 13px;
-    opacity: 0.75;
-  }
-
-  .pile-corner-tl { top: 6px; left: 7px; }
-  .pile-corner-tr { top: 6px; right: 7px; }
-  .pile-corner-bl { bottom: 6px; left: 7px; }
-  .pile-corner-br { bottom: 6px; right: 7px; }
 
   .pile-card-topbar {
     margin-bottom: 8px;
